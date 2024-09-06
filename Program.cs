@@ -45,24 +45,11 @@ class Supermarket
         {
             Client client = _clients.Peek();
             client.ShowInfo();
-            Product wontedProduct = client.GetProductWhichWontToBuy(_products);
-            bool isMoneyEnauf;
 
-            do
+            while (client.TryBayProductInBasket(out int money))
             {
-                isMoneyEnauf = client.TryAddProductIntoBag(wontedProduct);
-
-                if (isMoneyEnauf)
-                {
-                    _money += wontedProduct.Price;
-                }
-                else
-                {
-                    if (client.TryDeleteRandomProductInBasket() == false)
-                        break;
-                }
+                _money += money;
             }
-            while (isMoneyEnauf == false);
 
             client.ShowInfo();
             Console.WriteLine(("  money supermarket: " + _money + "$"));
@@ -78,7 +65,6 @@ class Client
     private List<Product> _productsInBasket;
     private List<Product> _productsInBag = new List<Product>();
     private Random _random;
-    public int Money { get; private set; }
 
     public Client(List<Product> products, int money, Random random)
     {
@@ -87,38 +73,24 @@ class Client
         Money = money;
     }
 
-    public bool TryDeleteRandomProductInBasket()
+    public int Money { get; private set; }
+
+    public bool TryBayProductInBasket(out int money)
     {
-        if (_productsInBasket.Count > 0)
+        if (_productsInBasket.Count > 0 && _productsInBasket[0].Price <= Money)
         {
-            var product = _productsInBasket[_random.Next(0, _productsInBasket.Count)];
-            Money += product.Price;
-            _productsInBasket.Remove(product);
+            Money -= _productsInBasket[0].Price;
+            money = _productsInBasket[0].Price;
+            _productsInBag.Add(_productsInBasket[0]);
+            _productsInBasket.Remove(_productsInBasket[0]);
             return true;
         }
         else
         {
+            Console.WriteLine("Mony not enouf");
+            money = 0;
             return false;
         }
-    }
-
-    public bool TryAddProductIntoBag(Product product)
-    {
-        if (Money >= product.Price)
-        {
-            Money -= product.Price;
-            _productsInBag.Add(product);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public Product GetProductWhichWontToBuy(List<Product> products)
-    {
-        return products[_random.Next(0, products.Count)].Clone();
     }
 
     public void ShowInfo()
@@ -150,14 +122,14 @@ class GeneratorOfProducts
                                           new Product("pr_6", 19) };
     }
 
-    public List<Product> GenereteNewRandomListOfProductsWithoutRepiting(Random random, bool allList = false)
+    public List<Product> GenereteNewRandomListOfProductsWithoutRepiting(Random random, bool needCopyAllList = false)
     {
         List<Product> products = new List<Product>();
         int minQuantityProductsInList = 4;
         int maxQuantityProductsInList = _products.Count + 1;
         int quantityOfProducts;
 
-        if (allList == true)
+        if (needCopyAllList)
             quantityOfProducts = _products.Count;
         else
             quantityOfProducts = random.Next(minQuantityProductsInList, maxQuantityProductsInList);
