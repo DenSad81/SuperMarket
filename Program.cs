@@ -18,7 +18,7 @@ class Supermarket
 {
     private int _money = 0;
     private Queue<Client> _clients = new Queue<Client>();
-    private List<Product> _products;
+    private  List<Product> _products;
 
     public Supermarket(Random random)
     {
@@ -31,12 +31,12 @@ class Supermarket
         {
             int money = random.Next(minQuantityClientMoneys, maxQuantityClientMoneys);
             generatorOfProducts = new GeneratorOfProducts();
-            List<Product> products = generatorOfProducts.GenereteNewRandomListOfProductsWithoutRepiting(random);
-            _clients.Enqueue(new Client(products, money, random));
+            List<Product> products = generatorOfProducts.Generete(random);
+            _clients.Enqueue(new Client(products, money));
         }
 
         generatorOfProducts = new GeneratorOfProducts();
-        _products = generatorOfProducts.GenereteNewRandomListOfProductsWithoutRepiting(random, true);
+        _products = generatorOfProducts.Generete(random, true);
     }
 
     public void Work()
@@ -64,12 +64,10 @@ class Client
 {
     private List<Product> _productsInBasket;
     private List<Product> _productsInBag = new List<Product>();
-    private Random _random;
 
-    public Client(List<Product> products, int money, Random random)
+    public Client(List<Product> products, int money)
     {
         _productsInBasket = products;
-        _random = random;
         Money = money;
     }
 
@@ -122,7 +120,7 @@ class GeneratorOfProducts
                                           new Product("pr_6", 19) };
     }
 
-    public List<Product> GenereteNewRandomListOfProductsWithoutRepiting(Random random, bool needCopyAllList = false)
+    public List<Product> Generete(Random random, bool needCopyAllList = false)
     {
         List<Product> products = new List<Product>();
         int minQuantityProductsInList = 4;
@@ -148,14 +146,13 @@ class GeneratorOfProducts
 
 class Product
 {
-    public string Title { get; private set; }
-    public int Price { get; private set; }
-
     public Product(string title = "", int price = 0)
     {
         Title = title;
         Price = price;
     }
+    public string Title { get; private set; }
+    public int Price { get; private set; }
 
     public Product Clone()
     {
