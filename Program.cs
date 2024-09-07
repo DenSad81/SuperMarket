@@ -18,25 +18,15 @@ class Supermarket
 {
     private int _money = 0;
     private Queue<Client> _clients = new Queue<Client>();
-    private List<Product> _products;
 
-    public Supermarket(Random random)
+    public Supermarket(Random random, int minClientMoneys = 100, int maxClientMoneys = 150, int clients = 13)
     {
-        int minQuantityClientMoneys = 100;
-        int maxQuantityClientMoneys = 150;
-        int quantityOfClients = 13;
-        GeneratorOfProducts generatorOfProducts;
-
-        for (int i = 0; i < quantityOfClients; i++)
+        for (int i = 0; i < clients; i++)
         {
-            int money = random.Next(minQuantityClientMoneys, maxQuantityClientMoneys);
-            generatorOfProducts = new GeneratorOfProducts();
-            List<Product> products = generatorOfProducts.Generete(random);
+            int money = random.Next(minClientMoneys, maxClientMoneys);
+            List<Product> products = new GeneratorOfProducts().Generete(random);
             _clients.Enqueue(new Client(products, money));
         }
-
-        generatorOfProducts = new GeneratorOfProducts();
-        _products = generatorOfProducts.Generete(random, true);
     }
 
     public void Work()
@@ -75,20 +65,20 @@ class Client
     {
         money = 0;
 
-        while (GetSumm(_productsInBasket) > Money && _productsInBasket.Count > 0)
+        while (CalculateSumm(_productsInBasket) > Money && _productsInBasket.Count > 0)
             _productsInBasket.Remove(_productsInBasket[0]);
 
         if (_productsInBasket.Count == 0)
             return false;
 
-        Money -= GetSumm(_productsInBasket);
-        money = GetSumm(_productsInBasket);
+        Money -= CalculateSumm(_productsInBasket);
+        money = CalculateSumm(_productsInBasket);
         _productsInBag.AddRange(_productsInBasket);
         _productsInBasket.Clear();
         return true;
     }
 
-    public int GetSumm(List<Product> products)
+    private int CalculateSumm(List<Product> products)
     {
         int summ = 0;
 
