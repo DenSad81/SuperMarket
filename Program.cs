@@ -36,8 +36,8 @@ class Supermarket
             Client client = _clients.Peek();
             client.ShowInfo();
 
-            client.TryBayProductInBasket(out int money);
-            _money += money;
+            if (client.TryBayProductInBasket(out int money))
+                _money += money;
 
             client.ShowInfo();
             Console.WriteLine(("  money supermarket: " + _money + "$"));
@@ -78,6 +78,20 @@ class Client
         return true;
     }
 
+    public void ShowInfo()
+    {
+        ShowInfoInfo(_productsInBasket);
+        Console.WriteLine();
+        ShowInfoInfo(_productsInBag);
+        Console.WriteLine("  money client: " + Money + "$");
+    }
+
+    private void ShowInfoInfo(List<Product> products)
+    {
+        foreach (var product in products)
+            product.ShowInfo();
+    }
+
     private int CalculateSumm(List<Product> products)
     {
         int summ = 0;
@@ -86,19 +100,6 @@ class Client
             summ += product.Price;
 
         return summ;
-    }
-
-    public void ShowInfo()
-    {
-        foreach (var product in _productsInBasket)
-            product.ShowInfo();
-
-        Console.WriteLine();
-
-        foreach (var product in _productsInBag)
-            product.ShowInfo();
-
-        Console.WriteLine("  money client: " + Money + "$");
     }
 }
 
