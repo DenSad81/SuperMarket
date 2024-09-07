@@ -18,7 +18,7 @@ class Supermarket
 {
     private int _money = 0;
     private Queue<Client> _clients = new Queue<Client>();
-    private  List<Product> _products;
+    private List<Product> _products;
 
     public Supermarket(Random random)
     {
@@ -46,10 +46,8 @@ class Supermarket
             Client client = _clients.Peek();
             client.ShowInfo();
 
-            while (client.TryBayProductInBasket(out int money))
-            {
-                _money += money;
-            }
+            client.TryBayProductInBasket(out int money);
+            _money += money;
 
             client.ShowInfo();
             Console.WriteLine(("  money supermarket: " + _money + "$"));
@@ -75,20 +73,29 @@ class Client
 
     public bool TryBayProductInBasket(out int money)
     {
-        if (_productsInBasket.Count > 0 && _productsInBasket[0].Price <= Money)
-        {
-            Money -= _productsInBasket[0].Price;
-            money = _productsInBasket[0].Price;
-            _productsInBag.Add(_productsInBasket[0]);
+        money = 0;
+
+        while (GetSumm(_productsInBasket) > Money && _productsInBasket.Count > 0)
             _productsInBasket.Remove(_productsInBasket[0]);
-            return true;
-        }
-        else
-        {
-            Console.WriteLine("Mony not enouf");
-            money = 0;
+
+        if (_productsInBasket.Count == 0)
             return false;
-        }
+
+        Money -= GetSumm(_productsInBasket);
+        money = GetSumm(_productsInBasket);
+        _productsInBag.AddRange(_productsInBasket);
+        _productsInBasket.Clear();
+        return true;
+    }
+
+    public int GetSumm(List<Product> products)
+    {
+        int summ = 0;
+
+        foreach (var product in products)
+            summ += product.Price;
+
+        return summ;
     }
 
     public void ShowInfo()
