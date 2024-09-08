@@ -21,12 +21,10 @@ class Supermarket
 
     public Supermarket(Random random, int minClientMoneys = 100, int maxClientMoneys = 150, int clients = 13)
     {
-        ProductsGenerator productGenerator = new ProductsGenerator();
-
         for (int i = 0; i < clients; i++)
         {
             int money = random.Next(minClientMoneys, maxClientMoneys);
-            List<Product> products = productGenerator.Generete(random);
+            List<Product> products = new ProductsGenerator().Generete(random);
             _clients.Enqueue(new Client(products, money));
         }
     }
@@ -57,7 +55,7 @@ class Client
 
     public Client(List<Product> products, int money)
     {
-        _productsInBasket = new List<Product>(products);
+        _productsInBasket = new List<Product>(products);//получили ссылку и по этой ссылке создали новый обьект
         Money = money;
     }
 
