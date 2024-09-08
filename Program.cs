@@ -57,7 +57,7 @@ class Client
 
     public Client(List<Product> products, int money)
     {
-        _productsInBasket = products;
+        _productsInBasket = new List<Product>(products);
         Money = money;
     }
 
