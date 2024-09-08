@@ -24,7 +24,7 @@ class Supermarket
         for (int i = 0; i < clients; i++)
         {
             int money = random.Next(minClientMoneys, maxClientMoneys);
-            List<Product> products = new GeneratorOfProducts().Generete(random);
+            List<Product> products = new ProductsGenerator().Generete(random);
             _clients.Enqueue(new Client(products, money));
         }
     }
@@ -36,7 +36,7 @@ class Supermarket
             Client client = _clients.Peek();
             client.ShowInfo();
 
-            if (client.TryBayProductInBasket(out int money))
+            if (client.TryBuyProductInBasket(out int money))
                 _money += money;
 
             client.ShowInfo();
@@ -61,7 +61,7 @@ class Client
 
     public int Money { get; private set; }
 
-    public bool TryBayProductInBasket(out int money)
+    public bool TryBuyProductInBasket(out int money)
     {
         money = 0;
 
@@ -80,13 +80,13 @@ class Client
 
     public void ShowInfo()
     {
-        ShowInfoInfo(_productsInBasket);
+        ShowCollection(_productsInBasket);
         Console.WriteLine();
-        ShowInfoInfo(_productsInBag);
+        ShowCollection(_productsInBag);
         Console.WriteLine("  money client: " + Money + "$");
     }
 
-    private void ShowInfoInfo(List<Product> products)
+    private void ShowCollection(List<Product> products)
     {
         foreach (var product in products)
             product.ShowInfo();
@@ -103,11 +103,11 @@ class Client
     }
 }
 
-class GeneratorOfProducts
+class ProductsGenerator
 {
     private List<Product> _products = new List<Product>();
 
-    public GeneratorOfProducts()
+    public ProductsGenerator()
     {
         _products = new List<Product>() { new Product("pr_0", 26),
                                           new Product("pr_1", 48),
@@ -149,6 +149,7 @@ class Product
         Title = title;
         Price = price;
     }
+
     public string Title { get; private set; }
     public int Price { get; private set; }
 
