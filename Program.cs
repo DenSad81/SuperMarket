@@ -21,10 +21,12 @@ class Supermarket
 
     public Supermarket(Random random, int minClientMoneys = 100, int maxClientMoneys = 150, int clients = 13)
     {
+        ProductsGenerator productGenerator = new ProductsGenerator();
+
         for (int i = 0; i < clients; i++)
         {
             int money = random.Next(minClientMoneys, maxClientMoneys);
-            List<Product> products = new ProductsGenerator().Generete(random);
+            List<Product> products = productGenerator.Generete(random);
             _clients.Enqueue(new Client(products, money));
         }
     }
